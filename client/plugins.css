@@ -1,0 +1,61 @@
+html, body {
+  font-family: sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+.plugins_active {
+  background-color: #3B8623;
+}
+
+.plugins_inactive {
+  background-color: #A3A3A3
+}
+
+.plugins_disabled {
+  opacity: 0.5;
+}
+
+.plugins_icon {
+  width: 30px;
+}
+
+.plugins_cursor {
+  cursor: pointer;
+  cursor: hand;
+}
+
+.plugins_avatar {
+  width: 60px;
+}
+
+.plugins_title {
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.plugins_avatar-large {
+  width: 100px;
+}
+
+.plugins_loading {
+  opacity:0.2;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  top: 0;
+  bottom: 0;
+  margin-top: auto;
+  margin-bottom: auto;
+  -webkit-animation:spin 0.9s linear infinite;
+  -moz-animation:spin 0.9s linear infinite;
+  animation:spin 0.9s linear infinite;
+}
+
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }

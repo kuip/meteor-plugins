@@ -1,53 +1,91 @@
 fs = Npm.require("fs")
 base = process.env.PWD
-console.log(base)
+Future = Npm.require('fibers/future')
 
-choices = [
-	{key: "meteor-base", title: "Meteor Base", description: "Packages every Meteor app needs to have", isRemovable: false, isActive: true},
-	{key: "mobile-experience ", title: "Mobile Experience", description: "Packages for a great mobile UX", isRemovable: false, isActive: true},
-	{key: "mongo", title: "Mongo DB", description: "The database Meteor supports right now", isRemovable: false, isActive: true},
-	{key: "blaze-html-templates", title: "Blaze HTML Templates", description: "Compile .html files into Meteor Blaze views", isRemovable: false, isActive: true},
-	{key: "session", title: "Session", description: "Client-side reactive dictionary for your app", isRemovable: false, isActive: true},
-	{key: "jquery", title: "Jquery", description: "Helpful client-side library", isRemovable: false, isActive: true},
-	{key: "track", title: "Tracker", description: "Meteor's client-side reactive programming library", isRemovable: false, isActive: true},
-	{key: "standard-minifiers ", title: "Standard Minifiers", description: "JS/CSS minifiers run for production mode", isRemovable: false, isActive: true},
-	{key: "es5-shim", title: "ES5 Shim", description: "ECMAScript 5 compatibility for older browsers.", isRemovable: false, isActive: true},
-	{key: "ecmascript", title: "ES5", description: "Enable ECMAScript2015+ syntax in app code", isRemovable: false, isActive: true},
-	{key: "autopublish", title: "Autopublish", description: "Publish all data to the clients (for prototyping)", isRemovable: false, isActive: true},
-	{key: "insecure", title: "Insecure", description: "Allow all DB writes from clients (for prototyping)", isRemovable: false, isActive: true}
+Plugins.parsePackages = function(keys) {
+  var myFuture = new Future()
 
-]
+  fs.readFile(base+'/.meteor/packages', 'utf8', function (err, data) {
+    if (err)
+        myFuture.throw(error)
 
-fs.readFile(base+'/.meteor/packages', 'utf8', function (err, data) {
-        if (err) {
-            console.log('Error: ' + err);
-            return;
-        }
+    var dat = parseplugins(data, keys)
+     myFuture.return(dat)
+  });
 
-        //data = JSON.parse(data);
-        //console.log();
+  return myFuture.wait()
+}
 
-        var dat = parseplugins(data)
+Plugins.setPackages = function() {
+  var dat = Plugins.parsePackages()
 
+  Plugins.persist.Plugins.update(
+    {key: {$in: dat}},
+    {$set: {isActive: true}},
+    {multi: true}
+  )
 
-        fs.writeFile(base+'/.meteor/packages', dat+"\n#13", function (err) {
-		  if (err) throw err;
-		  //console.log('It\'s saved!');
-		});
-    });
+  Plugins.persist.Plugins.update(
+    {key: {$nin: dat}},
+    {$set: {isActive: false}},
+    {multi: true}
+  )
+}
 
-parseplugins = function(data){
+Plugins.updatePackages = function(keys) {
+  var dat = Plugins.parsePackages(keys)
+  var plugins = Plugins.persist.Plugins.find({key: {$in: keys}}).map(function(p) {
+    if(!p.isRemovable && dat.indexOf(p.key) === -1)
+      dat.push(p.key)
+  })
+
+  dat = dat.join("\n")
+  
+  fs.writeFile(base+'/.meteor/packages', dat, function (err) {
+    if (err) throw err;
+  })
+}
+
+parseplugins = function(data, keys){
 	var datap = data.split("\n")
 	var lines=[]
-	var temp
+	var temp, add = []
+  if(keys)
+    add = JSON.parse(JSON.stringify(keys))
+
 	for(line in datap){
 		if (datap[line].indexOf('#') > 0) {
 			temp = datap[line].substring(0, datap[line].indexOf('#'));
 		} else {
-			temp = datap[line];
+      if(keys && keys.length > 0 && keys.indexOf(datap[line]) !== -1)
+        add.splice(add.indexOf(datap[line]), 1)
+			else
+        temp = datap[line]
 		}
 		temp = temp.trim()
-		if (temp != "") lines.push(temp)
+		if (temp != "" && temp !== lines[lines.length-1])
+      lines.push(temp)
 	}
-	return lines.join("\n")
+
+  for(i in add)
+    lines.push(add[i])
+
+  return lines
 }
+
+Meteor.methods({
+  updatePackage: function(keys) {
+      Plugins.updatePackages(keys)
+  }
+})
+
+Meteor.startup(function() {
+  if(!Plugins.persist.Plugins.findOne()) {
+    var keys = Object.keys(Plugins.choices)
+    for(k in keys) {
+      Plugins.persist.Plugins.insert(Plugins.choices[keys[k]])
+    }
+  }
+
+  Plugins.setPackages()
+})

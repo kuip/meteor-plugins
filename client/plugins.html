@@ -1,2 +1,49 @@
+<head>
+  <title>Meteor Plugins</title>
+  <meta name="description" content="Meteor Plugins. Changing Meteor packages from a web interface">
+  <meta name="keywords" content="Meteor, Meteor.JS, Web Development">
+  <meta name="author" content="Kuip Limited">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<template name="Plugins">
+    <a href="https://github.com/oro8oro/meteor-plugins" target="_blank">
+      <img class="plugins_avatar" src="/images/plugins.svg">
+    </a>
+    <span class="plugins_title">Meteor Plugins</span>
+    <br><br>
+
+  {{> PluginsChooser}}    
+</template>
 
 
+
+<template name="PluginsChooser">
+  {{#each choices}}
+      <div>
+          {{#if isActive}}
+            {{#if isRemovable}}
+              <img class="plugins_icon plugins_cursor plugins_toggle" src="/images/check.svg">
+            {{else}}
+              <img class="plugins_icon plugins_disabled" src="/images/check.svg">
+            {{/if}}
+          {{else}}
+              <img class="plugins_icon plugins_cursor plugins_toggle" src="/images/empty-check.svg">
+          {{/if}}
+        <a href={{repository}} target="_blank">
+          <img class="plugins_icon" src="/images/goto.svg">
+        </a>
+        <b>{{title}}</b> {{description}}  
+      </div>
+    {{/each}}
+    <br>
+    <img class="plugins_avatar plugins_cursor plugins_submit" src="/images/refresh.svg">
+    {{#if waiting}}
+      {{> Loading}}
+    {{/if}}
+</template>
+
+
+<template name="Loading">
+  <img class="plugins_avatar-large plugins_loading" src="/images/refresh-simple.svg">
+</template>
