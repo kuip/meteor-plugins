@@ -8,10 +8,13 @@ Plugins architecture for Meteor. Permits changing Meteor packages from a web int
 ## Intent
 The developer and end user should be able to hot-plug packages into the running Meteor app. This future package will upgrade the normal packages with this functionality plus eventual extra-functionality:
 
-* loose coupling of packages
-* package shared data space
+* loose coupling of packages (for package interactions)
+* loose dependecy of packages (for optional extensions)
+* package shared data space (for inter-package data exchange)
 * inter-package interactions
 * controlled extensibility
+
+We will define these in detail in the documentation as soon as these behaviors are implemented.
 
 ## Plans
 * have a complement app of the sort of Atmospherejs to choose packages from
