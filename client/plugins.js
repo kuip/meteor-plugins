@@ -2,6 +2,11 @@ Template.registerHelper('log', function(obj) {
   console.log(obj)
 })
 
+Template.Plugins.onCreated(function() {
+  window.windowType = "MeteorPlugins"
+  window.addEventListener("message", Plugins.f.apiCallback, false);
+})
+
 Template.PluginsChooser.onCreated(function() {
   this.changed = []
   this.choices = new ReactiveVar([])
