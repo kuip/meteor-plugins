@@ -76,6 +76,14 @@ parseplugins = function(data, keys){
 Meteor.methods({
   updatePackage: function(keys) {
       Plugins.updatePackages(keys)
+  },
+  updatePlugins: function(plugins) {
+    //check(plugins, Object)
+
+    for(var i = 0; i < plugins.length; i++) {
+      delete plugins[i]._id
+      Plugins.persist.Plugins.upsert({key: plugins[i].key}, {$set: plugins[i]})
+    }
   }
 })
 

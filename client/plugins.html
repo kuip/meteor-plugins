@@ -7,13 +7,16 @@
 </head>
 
 <template name="Plugins">
+  <div class="plugins_title_div">
     <a href="https://github.com/oro8oro/meteor-plugins" target="_blank">
-      <img class="plugins_avatar" src="/images/plugins.svg">
+      <img class="plugins_avatar" src="/images/plugins-logo.svg">
     </a>
     <span class="plugins_title">Meteor Plugins</span>
+  </div>
     <br><br>
-
-  {{> PluginsChooser}}    
+  <!--<div class="plugins_halflayout">{{> PluginsChooser}}</div>
+  <div class="plugins_halflayout">{{> PluginsServer}}</div>-->
+  {{> PluginsTabs}}
 </template>
 
 
@@ -44,6 +47,31 @@
 </template>
 
 
+<template name="PluginsServer">
+  <iframe frameborder="0" src="http://192.168.1.146:3000/" width="100%" height="100%"></iframe>
+</template>
+
 <template name="Loading">
   <img class="plugins_avatar-large plugins_loading" src="/images/refresh-simple.svg">
+</template>
+
+<template name="PluginsTabs">
+  <div class="tabs">
+    <input type="radio" name="tabs" id="tab1" checked >
+    <label for="tab1">
+      <img class="plugins_icon" src="/images/plugins-logo.svg"><span>Local</span>
+    </label>
+ 
+    <input type="radio" name="tabs" id="tab2">
+    <label for="tab2">
+      <img class="plugins_icon" src="/images/plugins-server.svg"><span>Server</span>
+    </label>
+ 
+    <div id="tab-content1" class="tab-content">
+      {{> PluginsChooser}}
+    </div>
+    <div id="tab-content2" class="tab-content">
+      {{> PluginsServer}}
+    </div>
+  </div>
 </template>
